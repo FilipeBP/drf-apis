@@ -16,8 +16,8 @@ class Client(models.Model):
         message='Please enter a valid phone number'
     )
 
-    name = models.CharField(max_length='60')
-    last_name = models.CharField(max_length='60')
+    name = models.CharField(max_length=60)
+    last_name = models.CharField(max_length=60)
     phone_number = models.CharField(validators=[phone_regex], max_length=11, null=True, blank=True)
     age = models.PositiveIntegerField()
     gender = models.CharField(max_length=4, choices=Gender.choices)
