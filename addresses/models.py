@@ -17,4 +17,5 @@ class Address(models.Model):
     zip_code = models.CharField(validators=[zip_code_regex], max_length=9)
 
     def __str__(self):
-        return f'{self.street}, {self.number}'
+        complement = ", " + self.complement if self.complement else ""
+        return f'{self.street}, {self.number}{complement}'
