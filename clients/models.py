@@ -28,7 +28,7 @@ class Client(models.Model):
     age = models.PositiveIntegerField()
     gender = models.CharField(max_length=4, choices=Gender.choices)
     main_address = models.ForeignKey(Address, on_delete=models.SET_NULL, related_name='client', null=True, blank=True)
-    secondaries_addressess = models.ManyToManyField(Address, related_name='clients', blank=True)
+    secondaries_addresses = models.ManyToManyField(Address, related_name='clients', blank=True)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
