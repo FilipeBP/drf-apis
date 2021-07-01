@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import RegexValidator
+from django.core.validators import MaxValueValidator, RegexValidator
 from django.contrib.auth import get_user_model
 from addresses.models import Address
 
@@ -25,7 +25,7 @@ class Client(models.Model):
     first_name = models.CharField(max_length=40)
     last_name = models.CharField(max_length=40)
     phone_number = models.CharField(validators=[phone_regex], max_length=11, null=True, blank=True)
-    age = models.PositiveIntegerField()
+    age = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(120)])
     gender = models.CharField(max_length=4, choices=Gender.choices)
     main_address = models.ForeignKey(Address, on_delete=models.SET_NULL, related_name='client', null=True, blank=True)
     secondaries_addresses = models.ManyToManyField(Address, related_name='clients', blank=True)
