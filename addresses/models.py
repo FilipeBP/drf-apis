@@ -15,4 +15,6 @@ class Address(models.Model):
     city = models.CharField(max_length=80)
     state = models.CharField(max_length=45)
     zip_code = models.CharField(validators=[zip_code_regex], max_length=9)
-    tag = models.CharField(max_length=45)
+
+    def __str__(self):
+        return f'{self.street}, {self.number}'

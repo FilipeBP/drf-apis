@@ -1,5 +1,7 @@
 from django.db import models
 from django.core.validators import RegexValidator
+from django.contrib.auth.models import User
+from addresses.models import Address
 
 
 class Gender(models.TextChoices):
@@ -7,6 +9,7 @@ class Gender(models.TextChoices):
     FEMALE = 'F'
     OTHER = 'O'
     PREFER_NOT_TO_SAY = 'PNTS'
+
 
 class Client(models.Model):
     # Números de telefone no Brasil possuem um DDD de dois dígitos entre 1 e 9
@@ -16,11 +19,12 @@ class Client(models.Model):
         message='Please enter a valid phone number'
     )
 
-    name = models.CharField(max_length=60)
-    last_name = models.CharField(max_length=60)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(validators=[phone_regex], max_length=11, null=True, blank=True)
     age = models.PositiveIntegerField()
     gender = models.CharField(max_length=4, choices=Gender.choices)
-    
+    main_address = models.OneToOneField(Address, on_delete=models.SET_NULL, null=True, related_name='client')
+    secondaries_addressess = models.ManyToManyField(Address, related_name='clients')
+
     def __str__(self):
         return f'{self.name} {self.last_name}'
