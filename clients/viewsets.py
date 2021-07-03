@@ -7,6 +7,8 @@ from clients.serializers import (
 from clients.models import Client
 
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 class ClientViewSet(ModelViewSet):
@@ -23,3 +25,18 @@ class ClientViewSet(ModelViewSet):
         elif self.action == 'update':
             serializer_class = UpdateClientSerializer
         return serializer_class
+
+    @action(methods=['put'], detail=True)
+    def set_main_address(self, request, pk=None):
+        client_obj = Client.objects.get(pk=pk)
+
+        data = request.data
+        main_address_id = data['main_address']
+
+        if client_obj.secondary_addresses.filter(id=main_address_id).exists():
+            client_obj.secondary_addresses.remove(main_address_id)
+
+        client_obj.main_address_id = main_address_id
+        client_obj.save()
+
+        return Response(data)
