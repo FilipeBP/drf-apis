@@ -1,3 +1,4 @@
+from clients.exceptions import AddressConflitError, AddressNotFound
 from utils.serializers import MessageSerializer
 from utils.models import Message
 from clients.serializers import (
@@ -61,11 +62,7 @@ class ClientViewSet(ModelViewSet):
         secondary_addresses_ids = data['secondary_addresses']
 
         if client_obj.main_address_id in secondary_addresses_ids:
-            response_content = MessageSerializer(Message('Main address cannot be set as secondary address'))
-            return Response(
-                data=response_content.data,
-                status=status.HTTP_409_CONFLICT
-            )
+            raise AddressConflitError()
 
         client_obj.secondary_addresses.add(*secondary_addresses_ids)
         client_obj.save()
@@ -75,7 +72,7 @@ class ClientViewSet(ModelViewSet):
     @swagger_auto_schema(
         method='delete',
         request_body=SecondaryAddressesSerializer,
-        responses={202: MessageSerializer, 400: MessageSerializer}
+        responses={202: MessageSerializer, 404: MessageSerializer}
     )
     @action(methods=['delete'], detail=True)
     def remove_secondary_addresses(self, request, pk=None):
@@ -86,16 +83,10 @@ class ClientViewSet(ModelViewSet):
 
         existing_ids = client_obj.secondary_addresses.filter(id__in=secondary_addresses_ids).values_list('id', flat=True)
         existing_ids = list(existing_ids)
-        print(f'{existing_ids = }')
         error_ids = list(set(existing_ids) ^ set(secondary_addresses_ids))
-        print(f'{error_ids = }')
 
         if error_ids:
-            response_content = MessageSerializer(Message(f"Secondary address(es): {error_ids} don't exist"))
-            return Response(
-                data=response_content.data,
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            raise AddressNotFound(secondary_addresses_ids)
 
         client_obj.secondary_addresses.remove(*secondary_addresses_ids)
         client_obj.save()
