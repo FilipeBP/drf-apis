@@ -1,18 +1,25 @@
 from clients.serializers import (
+    CreateClientSerializer,
     GeneralClientSerializer,
-    DetailedClientSerializer
+    DetailedClientSerializer,
+    UpdateClientSerializer
 )
 from clients.models import Client
 
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.response import Response
 
 
 class ClientViewSet(ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = DetailedClientSerializer
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serialized_data = GeneralClientSerializer(queryset, many=True)
-        return Response(serialized_data.data)
+    def get_serializer_class(self):
+        serializer_class = self.serializer_class
+
+        if self.action == 'list':
+            serializer_class = GeneralClientSerializer
+        elif self.action == 'create':
+            serializer_class = CreateClientSerializer
+        elif self.action == 'update':
+            serializer_class = UpdateClientSerializer
+        return serializer_class
