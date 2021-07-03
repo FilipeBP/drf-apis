@@ -34,6 +34,10 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'users.User'
 
+SWAGGER_SETTINGS = {
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'utils.swagger.ReadWriteAutoSchema',
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
