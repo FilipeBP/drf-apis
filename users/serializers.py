@@ -7,11 +7,12 @@ User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
 
-    check_password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+    password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'check_password')
+        fields = ('email', 'password', 'password2')
+        write_only_fields = ('password', 'password2')
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -19,9 +20,9 @@ class UserSerializer(serializers.ModelSerializer):
     def save(self):
         user = User(email=self.validated_data['email'])
         password = self.validated_data['password']
-        check_password = self.validated_data['check_password']
+        password2 = self.validated_data['password2']
 
-        if password != check_password:
-            raise serializers.ValidationError('Passwords must macth')
+        if password != password2:
+            raise serializers.ValidationError('Passwords must match')
         user.set_password(password)
         user.save()
