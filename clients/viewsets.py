@@ -4,6 +4,8 @@ from clients.serializers import (
     CreateClientSerializer,
     GeneralClientSerializer,
     DetailedClientSerializer,
+    MainAddressSerializer,
+    SecondaryAddressesSerializer,
     UpdateClientSerializer
 )
 from clients.models import Client
@@ -12,6 +14,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
+from drf_yasg.utils import swagger_auto_schema
 
 
 class ClientViewSet(ModelViewSet):
@@ -29,6 +32,7 @@ class ClientViewSet(ModelViewSet):
             serializer_class = UpdateClientSerializer
         return serializer_class
 
+    @swagger_auto_schema(method='put', request_body=MainAddressSerializer)
     @action(methods=['put'], detail=True)
     def set_main_address(self, request, pk=None):
         client_obj = Client.objects.get(pk=pk)
@@ -44,6 +48,11 @@ class ClientViewSet(ModelViewSet):
 
         return Response(data)
 
+    @swagger_auto_schema(
+        method='put',
+        request_body=SecondaryAddressesSerializer,
+        responses={200: SecondaryAddressesSerializer, 409: MessageSerializer}
+    )
     @action(methods=['put'], detail=True)
     def set_secondary_addresses(self, request, pk=None):
         client_obj = Client.objects.get(pk=pk)
@@ -63,6 +72,11 @@ class ClientViewSet(ModelViewSet):
 
         return Response(data)
 
+    @swagger_auto_schema(
+        method='delete',
+        request_body=SecondaryAddressesSerializer,
+        responses={202: MessageSerializer, 400: MessageSerializer}
+    )
     @action(methods=['delete'], detail=True)
     def remove_secondary_addresses(self, request, pk=None):
         client_obj = Client.objects.get(pk=pk)

@@ -39,3 +39,19 @@ class UpdateClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         fields = ('id', 'first_name', 'last_name', 'phone_number', 'age', 'gender')
+
+
+class MainAddressSerializer(serializers.ModelSerializer):
+    main_address = serializers.PrimaryKeyRelatedField(write_only=True, queryset=Address.objects.all())
+
+    class Meta:
+        model = Client
+        fields = ('main_address',)
+
+
+class SecondaryAddressesSerializer(serializers.ModelSerializer):
+    secondary_addresses = serializers.PrimaryKeyRelatedField(write_only=True, many=True, queryset=Address.objects.all())
+
+    class Meta:
+        model = Client
+        fields = ('secondary_addresses',)
